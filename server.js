@@ -16,12 +16,12 @@ app.post('/generate-text', async (req, res) => {
     const { prompt } = req.body;
 
     try {
-        // OpenAI API request
+        // OpenAI API request for GPT-3.5 or similar models
         const response = await axios.post(
-            'https://api.openai.com/v1/completions',
+            'https://api.openai.com/v1/chat/completions', // Updated endpoint for GPT-3.5 or newer models
             {
-                model: 'text-davinci-003', // Update the model as needed
-                prompt: prompt,
+                model: 'gpt-3.5-turbo', // You can use gpt-4 or other models as needed
+                messages: [{ role: 'user', content: prompt }], // Correct format for chat-based models
                 max_tokens: 100,
             },
             {
@@ -33,7 +33,7 @@ app.post('/generate-text', async (req, res) => {
         );
 
         // Respond with the generated text
-        res.status(200).json({ generatedText: response.data.choices[0].text });
+        res.status(200).json({ generatedText: response.data.choices[0].message.content });
     } catch (error) {
         console.error('Error generating text:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to generate text' });
