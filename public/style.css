@@ -5,7 +5,7 @@ body {
   padding: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Align items to the top for better spacing */
   background-color: #ffe4f0; /* Light pink background */
   min-height: 100vh;
 }
@@ -24,6 +24,7 @@ body {
 h1, h2 {
   text-align: center;
   color: #ff3d85; /* Bright pink headings */
+  margin-bottom: 20px;
 }
 
 /* Text Areas */
@@ -34,16 +35,23 @@ textarea {
   border: 1px solid #ff90c8;
   border-radius: 8px;
   font-size: 16px;
+  resize: vertical; /* Allow vertical resize */
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 25px;
   margin: 10px 5px;
   background: linear-gradient(45deg, #ff5e99, #ff3d85);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease; /* Smooth transition for hover effect */
+}
+
+button:hover {
+  background: linear-gradient(45deg, #ff3d85, #ff5e99); /* Inverted gradient on hover */
 }
 
 /* Generated Image Section */
@@ -62,10 +70,57 @@ button {
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   margin: 10px 0;
+  display: none; /* Initially hide the generated image */
 }
 
 #image-display h3 {
   font-size: 18px;
   color: #ff3d85; /* Bright pink */
   margin-bottom: 10px;
+}
+
+/* Section for Generating AI Image */
+#ai-image-creation {
+  text-align: center;
+  margin-top: 30px;
+}
+
+#generate-image-btn {
+  padding: 12px 25px;
+  margin: 10px 5px;
+  background: linear-gradient(45deg, #ff5e99, #ff3d85);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+#generate-image-btn:hover {
+  background: linear-gradient(45deg, #ff3d85, #ff5e99);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  h1, h2 {
+    font-size: 1.5em;
+  }
+
+  textarea {
+    font-size: 14px;
+  }
+
+  button {
+    padding: 10px 20px;
+  }
+
+  #image-canvas {
+    width: 100%; /* Ensure canvas is responsive */
+    height: auto;
+  }
 }
