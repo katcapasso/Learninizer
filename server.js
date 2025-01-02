@@ -1,33 +1,28 @@
-const express = require('express'); // Import Express
-const cors = require('cors'); // Import CORS
-const axios = require('axios'); // Import Axios
-const dotenv = require('dotenv'); // Import Dotenv
-const path = require('path'); // Import Path for static file serving
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+require('dotenv').config();
 
-dotenv.config(); // Load environment variables from .env file
+const app = express();
+const port = 3000;
 
-const app = express(); // Initialize Express
-const port = 3000; // Define the port for the server
+// Middleware
+app.use(express.json()); // Native JSON parsing middleware
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(cors()); // Enable CORS
 
-// Middleware setup
-app.use(cors()); // Enable CORS for all routes
-app.use(express.json()); // Enable JSON parsing for incoming requests
-app.use(express.static('public')); // Serve static files from the "public" directory
-
-// API Endpoint for ChatGPT
+// API Route to handle text generation
 app.post('/generate-text', async (req, res) => {
     const { prompt } = req.body;
 
-    if (!prompt) {
-        return res.status(400).json({ error: 'Prompt is required' });
-    }
-
     try {
+        // OpenAI API request
         const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions',
+            'https://api.openai.com/v1/completions',
             {
-                model: 'gpt-4',
-                messages: [{ role: 'user', content: prompt }],
+                model: 'text-davinci-003', // Update the model as needed
+                prompt: prompt,
+                max_tokens: 100,
             },
             {
                 headers: {
@@ -37,59 +32,15 @@ app.post('/generate-text', async (req, res) => {
             }
         );
 
-        const generatedText = response.data.choices[0].message.content;
-        res.json({ generatedText });
+        // Respond with the generated text
+        res.status(200).json({ generatedText: response.data.choices[0].text });
     } catch (error) {
         console.error('Error generating text:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to generate text' });
     }
 });
 
-// API Endpoint for DALL·E Image Generation
-app.post('/generate-image', async (req, res) => {
-    const { prompt } = req.body;
-
-    if (!prompt) {
-        return res.status(400).json({ error: 'Prompt is required for image generation' });
-    }
-
-    try {
-        const response = await axios.post(
-            'https://api.openai.com/v1/images/generations',
-            {
-                prompt: prompt,
-                n: 1,
-                size: '1024x1024',
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-                },
-            }
-        );
-
-        const imageUrl = response.data.data[0].url;
-        res.json({ imageUrl });
-    } catch (error) {
-        console.error('Error generating image:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Failed to generate image' });
-    }
-});
-
-// Serve the frontend
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // Start the server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port}`);
 });
-
-
-
-
-
-
-
