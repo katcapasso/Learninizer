@@ -11,9 +11,9 @@ const generateImageBtn = document.getElementById('generate-image-btn');
 const generatedImage = document.getElementById('generated-image');
 
 // New Elements for ChatGPT
-const submitPromptBtn = document.getElementById('submit-prompt-btn');
-const userPrompt = document.getElementById('user-prompt');
-const responseText = document.getElementById('response-text');
+const submitPromptBtn = document.getElementById('submit-prompt-btn'); 
+const userPrompt = document.getElementById('user-prompt'); 
+const responseText = document.getElementById('response-text'); 
 
 // OCR Process
 fileUpload.addEventListener('change', () => {
@@ -31,7 +31,7 @@ fileUpload.addEventListener('change', () => {
 
 // Highlight Text
 highlightBtn.addEventListener('click', () => {
-  selectedText.value = extractedText.value.substring(0, 200); // Highlight first 200 characters
+  selectedText.value = extractedText.value.substring(0, 200); 
 });
 
 // Create Image from Text
@@ -54,11 +54,9 @@ saveImageBtn.addEventListener('click', () => {
   link.click();
 });
 
-// Generate Image using DALL·E API
+// Generate Image using Backend API
 generateImageBtn.addEventListener('click', async () => {
   const prompt = selectedText.value.trim();
-  const apiKey = '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'; // Replace with your OpenAI API key
-  const apiUrl = 'https://api.openai.com/v1/images/generations';
 
   if (!prompt) {
     alert('Please enter or highlight text to generate an image.');
@@ -66,17 +64,12 @@ generateImageBtn.addEventListener('click', async () => {
   }
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch('http://localhost:3000/generate-image', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        prompt: `Create a visually appealing educational image with the following text: "${prompt}"`,
-        n: 1,
-        size: '1024x1024',
-      }),
+      body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) {
@@ -84,13 +77,13 @@ generateImageBtn.addEventListener('click', async () => {
     }
 
     const data = await response.json();
-    const imageUrl = data.data[0].url;
+    const imageUrl = data.imageUrl;
 
     generatedImage.src = imageUrl;
     generatedImage.style.display = 'block';
   } catch (error) {
     console.error('Error:', error);
-    alert('Failed to generate image. Please check your API key or try again later.');
+    alert('Failed to generate image. Please try again later.');
   }
 });
 
@@ -102,7 +95,7 @@ async function fetchChatGPTResponse(prompt) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt: prompt }),
+      body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) {
@@ -126,3 +119,4 @@ submitPromptBtn.addEventListener('click', () => {
     alert('Please enter a prompt.');
   }
 });
+

@@ -1,28 +1,33 @@
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-require('dotenv').config();
+const express = require('express'); // Import Express
+const cors = require('cors'); // Import CORS
+const axios = require('axios'); // Import Axios
+const dotenv = require('dotenv'); // Import Dotenv
+const path = require('path'); // Import Path for static file serving
 
-const app = express();
-const port = 3000;
+dotenv.config(); // Load environment variables from .env file
 
-// Middleware
-app.use(express.json()); // Native JSON parsing middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(cors()); // Enable CORS
+const app = express(); // Initialize Express
+const port = 3000; // Define the port for the server
 
-// API Route to handle text generation
+// Middleware setup
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Enable JSON parsing for incoming requests
+app.use(express.static('public')); // Serve static files from the "public" directory
+
+// API Endpoint for ChatGPT
 app.post('/generate-text', async (req, res) => {
     const { prompt } = req.body;
 
+    if (!prompt) {
+        return res.status(400).json({ error: 'Prompt is required' });
+    }
+
     try {
-        // OpenAI API request for GPT-3.5 or similar models
         const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions', // Updated endpoint for GPT-3.5 or newer models
+            'https://api.openai.com/v1/chat/completions',
             {
-                model: 'gpt-3.5-turbo', // You can use gpt-4 or other models as needed
-                messages: [{ role: 'user', content: prompt }], // Correct format for chat-based models
-                max_tokens: 100,
+                model: 'gpt-3.5-turbo',
+                messages: [{ role: 'user', content: prompt }],
             },
             {
                 headers: {
@@ -32,15 +37,24 @@ app.post('/generate-text', async (req, res) => {
             }
         );
 
-        // Respond with the generated text
-        res.status(200).json({ generatedText: response.data.choices[0].message.content });
+        const generatedText = response.data.choices[0].message.content;
+        res.json({ generatedText });
     } catch (error) {
         console.error('Error generating text:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to generate text' });
     }
 });
 
+// Serve the frontend
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Start the server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
+
+
+
+
