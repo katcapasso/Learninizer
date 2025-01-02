@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learninizer: Text to Image Learning Tool</title>
+    <!-- Link to CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,25 +24,12 @@
             <button id="highlight-btn">Highlight Text</button>
         </div>
 
-        <!-- AI Text Generation Section -->
-        <div class="ai-text-generation-section">
-            <h2>Ask ChatGPT</h2>
-            <textarea id="user-prompt" placeholder="Type your question here..."></textarea>
-            <button id="submit-prompt-btn">Submit Prompt</button>
-            <div id="chatgpt-response">
-                <h3>ChatGPT Response:</h3>
-                <p id="response-text"></p>
-            </div>
-        </div>
-
         <!-- Image Creation Section -->
         <div id="image-creation" class="image-creation">
             <h2>Create Image from Text</h2>
             <textarea id="selected-text" placeholder="Highlight or edit text to create image"></textarea>
             <button id="create-image-btn">Create Image</button>
-            <button id="generate-image-btn">Generate AI Image</button>
             <canvas id="image-canvas"></canvas>
-            <img id="generated-image" alt="Generated Image" style="max-width: 100%; display: none; border: 1px solid #ccc;">
         </div>
 
         <!-- Save Section -->
@@ -49,8 +37,7 @@
             <button id="save-image-btn">Save Image</button>
         </div>
     </div>
-
-    <!-- Link the JavaScript file -->
+    <!-- Link to JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>
