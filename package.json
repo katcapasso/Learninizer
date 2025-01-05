@@ -1,7 +1,6 @@
 {
   "name": "learninizer",
   "version": "1.0.0",
-  "description": "A text-to-image learning tool powered by AI.",
   "main": "index.js",
   "dependencies": {
     "axios": "^1.4.0",
@@ -10,15 +9,11 @@
     "multer": "^1.4.5-lts.1",
     "pdf-lib": "^1.17.1",
     "sharp": "^0.32.1",
-    "tesseract.js": "^2.1.5"
+    "tesseract.js": "^2.1.5",
+    "dotenv": "^16.3.1"
   },
   "scripts": {
     "start": "node index.js",
     "build": "echo 'No build step needed. Deployment relies on Vercel configuration.'"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "author": "Katherine Capasso",
-  "license": "MIT"
+  }
 }
