@@ -61,27 +61,23 @@ section {
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Show Feedback Dynamically */
 .feedback.show {
-  display: block; /* Display when triggered */
+  display: block;
   opacity: 1;
 }
 
-/* Error Feedback Styling */
 .feedback.error-feedback {
   color: #ff0000; /* Red for errors */
   background-color: #ffe6e6; /* Light red background */
   border: 1px solid #ff0000;
 }
 
-/* Success Feedback Styling */
 .feedback.success-feedback {
   color: #28a745; /* Green for success */
   background-color: #e6ffee; /* Light green background */
   border: 1px solid #28a745;
 }
 
-/* Default Feedback Styling */
 .feedback.default-feedback {
   color: #ff90c8; /* Pink for neutral feedback */
   background-color: #fffafc; /* Light pink background */

@@ -25,17 +25,17 @@
         <section id="text-display" class="text-display">
             <h2>Extracted Text</h2>
             <textarea id="extracted-text" placeholder="Extracted text will appear here..." readonly></textarea>
-            <button id="highlight-btn" class="btn">Highlight Text</button>
+            <button id="highlight-btn" class="btn" aria-label="Highlight Text">Highlight Text</button>
         </section>
 
         <!-- AI Image Generation Section -->
         <section id="image-creation" class="image-creation">
             <h2>Generate AI Image</h2>
             <textarea id="selected-text" placeholder="Highlight or edit text to create an AI-powered image"></textarea>
-            <button id="generate-image-btn" class="btn">Generate AI Image</button>
+            <button id="generate-image-btn" class="btn" aria-label="Generate AI Image">Generate AI Image</button>
             <div id="image-display">
                 <h3>Generated Image:</h3>
-                <img id="generated-image" alt="Generated Image" style="max-width: 100%; display: none; border: 1px solid #ccc;">
+                <img id="generated-image" alt="Generated AI Image" style="max-width: 100%; display: none; border: 1px solid #ccc;">
                 <p id="image-placeholder" class="feedback default-feedback">No image generated yet.</p>
             </div>
         </section>
@@ -44,7 +44,7 @@
         <section class="ai-text-generation-section">
             <h2>Ask ChatGPT</h2>
             <textarea id="user-prompt" placeholder="Type your question here to get a response from ChatGPT..."></textarea>
-            <button id="submit-prompt-btn" class="btn">Submit Prompt</button>
+            <button id="submit-prompt-btn" class="btn" aria-label="Submit Prompt">Submit Prompt</button>
             <div id="chatgpt-response">
                 <h3>ChatGPT Response:</h3>
                 <p id="response-text">No response yet.</p>
@@ -54,9 +54,9 @@
         <!-- Image Creation and Save Section -->
         <section class="image-creation-and-save">
             <h2>Create and Save Image</h2>
-            <button id="create-image-btn" class="btn">Create Image</button>
+            <button id="create-image-btn" class="btn" aria-label="Create Image">Create Image</button>
             <canvas id="image-canvas" style="border: 1px solid #ccc; display: block;"></canvas>
-            <button id="save-image-btn" class="btn">Save Image</button>
+            <button id="save-image-btn" class="btn" aria-label="Save Image">Save Image</button>
         </section>
     </div>
 
@@ -68,4 +68,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

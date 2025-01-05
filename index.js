@@ -10,7 +10,6 @@ const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 const { PDFDocument } = require("pdf-lib");
-const pdf2png = require("pdf-poppler"); // Using pdf-poppler
 require("dotenv").config();
 
 // Check if essential environment variables are defined
@@ -31,8 +30,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:4000",
-      "https://learninizer.vercel.app",
+      "http://localhost:4000", // Local environment
+      "https://learninizer.vercel.app", // Deployed environment
     ],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
@@ -63,6 +62,24 @@ if (!fs.existsSync(uploadsDir)) {
 const upload = multer({ dest: uploadsDir });
 console.log("Multer configured...");
 
+// Function to convert PDF pages to images
+async function convertPdfToImages(filePath, outputDir) {
+  const pdfBytes = fs.readFileSync(filePath);
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+
+  const images = [];
+  for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+    const page = pdfDoc.getPage(i);
+    const embeddedImage = await page.embedPng(page.getOperatorList());
+    const pngBuffer = Buffer.from(embeddedImage.imageData);
+    const outputPath = path.join(outputDir, `page-${i + 1}.png`);
+    await sharp(pngBuffer).toFile(outputPath);
+    images.push(outputPath);
+  }
+
+  return images;
+}
+
 // Root Route (to verify the server is running)
 app.get("/api", (req, res) => {
   res.status(200).send("API is running. Endpoints are ready.");
@@ -87,33 +104,23 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
         fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      const options = {
-        format: "png",
-        out_dir: outputDir,
-        out_prefix: "page",
-        page: null, // Convert all pages
-      };
-
-      await pdf2png.convert(filePath, options);
-      console.log("PDF converted to images...");
-
-      const pngFiles = fs
-        .readdirSync(outputDir)
-        .filter((file) => file.endsWith(".png"))
-        .map((file) => path.join(outputDir, file));
+      const pngFiles = await convertPdfToImages(filePath, outputDir);
 
       let extractedText = "";
       for (const imageFile of pngFiles) {
-        const { data: { text } } = await Tesseract.recognize(imageFile, "eng");
+        const {
+          data: { text },
+        } = await Tesseract.recognize(imageFile, "eng");
         extractedText += `${text}\n`;
         fs.unlinkSync(imageFile); // Delete the image file after processing
       }
-
       console.log("OCR completed successfully...");
       res.status(200).json({ extractedText });
     } else if (fileType.startsWith("image/")) {
       console.log("Processing image...");
-      const { data: { text } } = await Tesseract.recognize(filePath, "eng");
+      const {
+        data: { text },
+      } = await Tesseract.recognize(filePath, "eng");
       console.log("OCR completed successfully...");
       res.status(200).json({ extractedText: text });
     } else {
@@ -153,7 +160,7 @@ app.post("/api/generate-text", async (req, res) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        }
+        },
       }
     );
     console.log("Text generation completed successfully...");
@@ -186,7 +193,7 @@ app.post("/api/generate-image", async (req, res) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        }
+        },
       }
     );
     console.log("Image generation completed successfully...");

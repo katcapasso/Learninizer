@@ -20,7 +20,7 @@ const API_BASE_URL =
     ? "http://localhost:4000/api"
     : "https://learninizer.vercel.app/api";
 
-// Helper function to show feedback
+// Helper functions for feedback
 function showFeedback(element, message, type = "default") {
   element.textContent = message;
   element.classList.remove("error-feedback", "success-feedback", "default-feedback");
@@ -28,7 +28,6 @@ function showFeedback(element, message, type = "default") {
   element.style.display = "block";
 }
 
-// Helper function to hide feedback
 function hideFeedback(element) {
   element.style.display = "none";
 }
