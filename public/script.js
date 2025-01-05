@@ -20,7 +20,20 @@ const API_BASE_URL =
     ? "http://localhost:4000/api"
     : "https://learninizer.vercel.app/api";
 
-// Helper function to test API connection
+// Helper function to show feedback
+function showFeedback(element, message, type = "default") {
+  element.textContent = message;
+  element.classList.remove("error-feedback", "success-feedback", "default-feedback");
+  element.classList.add(`${type}-feedback`);
+  element.style.display = "block";
+}
+
+// Helper function to hide feedback
+function hideFeedback(element) {
+  element.style.display = "none";
+}
+
+// Test API connection
 async function testAPIConnection() {
   try {
     const response = await fetch(`${API_BASE_URL}`);
@@ -48,7 +61,7 @@ fileUpload.addEventListener("change", async () => {
   const formData = new FormData();
   formData.append("file", file);
 
-  uploadFeedback.textContent = "Uploading and processing file...";
+  showFeedback(uploadFeedback, "Uploading and processing file...", "default");
 
   try {
     const response = await fetch(`${API_BASE_URL}/extract-text`, {
@@ -63,14 +76,10 @@ fileUpload.addEventListener("change", async () => {
 
     const data = await response.json();
     extractedText.value = data.extractedText || "No text extracted.";
-    uploadFeedback.textContent = "File processed successfully!";
-    uploadFeedback.classList.add("success-feedback");
-    uploadFeedback.classList.remove("error-feedback");
+    showFeedback(uploadFeedback, "File processed successfully!", "success");
   } catch (error) {
     console.error("Error during OCR process:", error.message);
-    uploadFeedback.textContent = "Failed to process the file.";
-    uploadFeedback.classList.add("error-feedback");
-    uploadFeedback.classList.remove("success-feedback");
+    showFeedback(uploadFeedback, "Failed to process the file.", "error");
     alert(error.message);
   }
 });

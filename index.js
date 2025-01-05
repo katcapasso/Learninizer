@@ -10,13 +10,13 @@ const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 const { PDFDocument } = require("pdf-lib");
-const pdf2png = require("pdf-poppler"); // Install with `npm install pdf-poppler`
+const pdf2png = require("pdf-poppler"); // Using pdf-poppler
 require("dotenv").config();
 
 // Check if essential environment variables are defined
 if (!process.env.OPENAI_API_KEY) {
   console.error("FATAL ERROR: Missing OPENAI_API_KEY in environment variables.");
-  process.exit(1); // Exit the process if critical config is missing
+  process.exit(1);
 }
 
 console.log("Dependencies loaded...");
@@ -31,8 +31,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:4000", // Local environment
-      "https://learninizer.vercel.app", // Deployed environment
+      "http://localhost:4000",
+      "https://learninizer.vercel.app",
     ],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
@@ -91,7 +91,7 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
         format: "png",
         out_dir: outputDir,
         out_prefix: "page",
-        page: null,
+        page: null, // Convert all pages
       };
 
       await pdf2png.convert(filePath, options);
@@ -106,8 +106,9 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
       for (const imageFile of pngFiles) {
         const { data: { text } } = await Tesseract.recognize(imageFile, "eng");
         extractedText += `${text}\n`;
-        fs.unlinkSync(imageFile);
+        fs.unlinkSync(imageFile); // Delete the image file after processing
       }
+
       console.log("OCR completed successfully...");
       res.status(200).json({ extractedText });
     } else if (fileType.startsWith("image/")) {
