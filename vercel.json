@@ -11,8 +11,19 @@
       }
     ],
     "routes": [
-      { "src": "/api/(.*)", "dest": "index.js" },
-      { "src": "/(.*)", "dest": "/public/$1" }
-    ]
+      {
+        "src": "/api/(.*)",
+        "dest": "index.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+      }
+    ],
+    "functions": {
+      "index.js": {
+        "runtime": "nodejs18.x"
+      }
+    }
   }
   
