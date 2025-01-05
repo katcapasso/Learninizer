@@ -184,22 +184,6 @@ footer {
   color: #888;
 }
 
-/* ChatGPT Section */
-.chatgpt-section {
-  margin-top: 20px;
-  text-align: center;
-}
-
-#response-text {
-  min-height: 100px;
-  overflow-y: auto;
-  background-color: #fffafc;
-  color: #333;
-  padding: 10px;
-  border: 1px solid #ff90c8;
-  border-radius: 8px;
-}
-
 /* Loading Spinner */
 .loading-spinner {
   border: 4px solid #f3f3f3; /* Light gray */

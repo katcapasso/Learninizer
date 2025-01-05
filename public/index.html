@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learninizer: Convert text into learning tools with AI-powered features. Upload images or PDFs, extract text, and generate AI-based visuals or answers.">
     <title>Learninizer: Text to Image Learning Tool</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,49 +15,49 @@
         </header>
 
         <!-- Upload Section -->
-        <section class="upload-section">
-            <h2>Upload Image or PDF</h2>
+        <section class="upload-section" aria-labelledby="upload-title">
+            <h2 id="upload-title">Upload Image or PDF</h2>
             <label for="file-upload" class="upload-label">Choose a file:</label>
-            <input type="file" id="file-upload" accept="image/*, .pdf">
-            <p id="upload-feedback" class="feedback default-feedback">No file uploaded yet.</p> <!-- Dynamic upload feedback -->
+            <input type="file" id="file-upload" accept="image/*, .pdf" aria-label="Upload a file">
+            <p id="upload-feedback" class="feedback default-feedback" aria-live="polite">No file uploaded yet.</p>
         </section>
 
         <!-- Extracted Text Section -->
-        <section id="text-display" class="text-display">
-            <h2>Extracted Text</h2>
-            <textarea id="extracted-text" placeholder="Extracted text will appear here..." readonly></textarea>
-            <button id="highlight-btn" class="btn" aria-label="Highlight Text">Highlight Text</button>
+        <section id="text-display" class="text-display" aria-labelledby="text-display-title">
+            <h2 id="text-display-title">Extracted Text</h2>
+            <textarea id="extracted-text" placeholder="Extracted text will appear here..." readonly aria-label="Extracted text output"></textarea>
+            <button id="highlight-btn" class="btn" aria-label="Highlight extracted text">Highlight Text</button>
         </section>
 
         <!-- AI Image Generation Section -->
-        <section id="image-creation" class="image-creation">
-            <h2>Generate AI Image</h2>
-            <textarea id="selected-text" placeholder="Highlight or edit text to create an AI-powered image"></textarea>
-            <button id="generate-image-btn" class="btn" aria-label="Generate AI Image">Generate AI Image</button>
+        <section id="image-creation" class="image-creation" aria-labelledby="image-creation-title">
+            <h2 id="image-creation-title">Generate AI Image</h2>
+            <textarea id="selected-text" placeholder="Highlight or edit text to create an AI-powered image" aria-label="Enter or edit text for AI image generation"></textarea>
+            <button id="generate-image-btn" class="btn" aria-label="Generate AI-powered image">Generate AI Image</button>
             <div id="image-display">
                 <h3>Generated Image:</h3>
                 <img id="generated-image" alt="Generated AI Image" style="max-width: 100%; display: none; border: 1px solid #ccc;">
-                <p id="image-placeholder" class="feedback default-feedback">No image generated yet.</p>
+                <p id="image-placeholder" class="feedback default-feedback" aria-live="polite">No image generated yet.</p>
             </div>
         </section>
 
         <!-- AI Text Generation Section -->
-        <section class="ai-text-generation-section">
-            <h2>Ask ChatGPT</h2>
-            <textarea id="user-prompt" placeholder="Type your question here to get a response from ChatGPT..."></textarea>
-            <button id="submit-prompt-btn" class="btn" aria-label="Submit Prompt">Submit Prompt</button>
+        <section class="ai-text-generation-section" aria-labelledby="ai-text-title">
+            <h2 id="ai-text-title">Ask ChatGPT</h2>
+            <textarea id="user-prompt" placeholder="Type your question here to get a response from ChatGPT..." aria-label="Enter a question for ChatGPT"></textarea>
+            <button id="submit-prompt-btn" class="btn" aria-label="Submit your question to ChatGPT">Submit Prompt</button>
             <div id="chatgpt-response">
                 <h3>ChatGPT Response:</h3>
-                <p id="response-text">No response yet.</p>
+                <p id="response-text" aria-live="polite">No response yet.</p>
             </div>
         </section>
 
         <!-- Image Creation and Save Section -->
-        <section class="image-creation-and-save">
-            <h2>Create and Save Image</h2>
-            <button id="create-image-btn" class="btn" aria-label="Create Image">Create Image</button>
-            <canvas id="image-canvas" style="border: 1px solid #ccc; display: block;"></canvas>
-            <button id="save-image-btn" class="btn" aria-label="Save Image">Save Image</button>
+        <section class="image-creation-and-save" aria-labelledby="image-save-title">
+            <h2 id="image-save-title">Create and Save Image</h2>
+            <button id="create-image-btn" class="btn" aria-label="Create an image from text">Create Image</button>
+            <canvas id="image-canvas" style="border: 1px solid #ccc; display: block;" aria-label="Canvas for creating an image"></canvas>
+            <button id="save-image-btn" class="btn" aria-label="Save the generated image">Save Image</button>
         </section>
     </div>
 

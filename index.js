@@ -70,19 +70,17 @@ async function convertPdfToImages(filePath, outputDir) {
   const images = [];
   for (let i = 0; i < pdfDoc.getPageCount(); i++) {
     const page = pdfDoc.getPage(i);
-    const embeddedImage = await page.embedPng(page.getOperatorList());
-    const pngBuffer = Buffer.from(embeddedImage.imageData);
+    const pngImage = await page.embedPng(page.getEmbeddedImages()[0]);
     const outputPath = path.join(outputDir, `page-${i + 1}.png`);
-    await sharp(pngBuffer).toFile(outputPath);
+    fs.writeFileSync(outputPath, pngImage);
     images.push(outputPath);
   }
-
   return images;
 }
 
 // Root Route (to verify the server is running)
 app.get("/api", (req, res) => {
-  res.status(200).send("API is running. Endpoints are ready.");
+  res.status(200).send({ message: "API is running. Endpoints are ready." });
 });
 
 // Route to extract text from uploaded files
@@ -185,7 +183,7 @@ app.post("/api/generate-image", async (req, res) => {
     const response = await axios.post(
       "https://api.openai.com/v1/images/generations",
       {
-        prompt: prompt,
+        prompt,
         n: 1,
         size: "512x512",
       },
