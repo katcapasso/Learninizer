@@ -1,0 +1,236 @@
+/* General Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffe4f0; /* Light pink background */
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  width: 100%;
+  margin: 20px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #ff90c8; /* Pink border */
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #ff3d85; /* Bright pink */
+  margin-bottom: 10px;
+}
+
+p {
+  color: #555; /* Subtle gray */
+  font-size: 1.2rem;
+}
+
+h2 {
+  color: #ff3d85; /* Bright pink for section headers */
+  margin-bottom: 10px;
+}
+
+/* Sections */
+section {
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* Feedback Styling */
+.feedback {
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+/* Error Feedback Styling */
+.feedback.error-feedback {
+  color: #ff0000; /* Red for errors */
+  background-color: #ffe6e6; /* Light red background */
+  border: 1px solid #ff0000;
+}
+
+/* Success Feedback Styling */
+.feedback.success-feedback {
+  color: #28a745; /* Green for success */
+  background-color: #e6ffee; /* Light green background */
+  border: 1px solid #28a745;
+}
+
+/* Default Feedback Styling */
+.feedback.default-feedback {
+  color: #ff90c8; /* Pink for neutral feedback */
+  background-color: #fffafc; /* Light pink background */
+  border: 1px solid #ff90c8;
+}
+
+/* Text Areas */
+textarea, #user-prompt, #response-text {
+  width: 100%;
+  height: 100px;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ff90c8;
+  border-radius: 8px;
+  font-size: 16px;
+  resize: none;
+  background-color: #fffafc; /* Soft pink */
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+textarea:focus, #user-prompt:focus {
+  outline: none;
+  transform: scale(1.02);
+  box-shadow: 0 0 8px rgba(255, 61, 133, 0.5); /* Pink glow */
+}
+
+/* Buttons */
+button {
+  padding: 12px 25px;
+  margin: 10px 5px;
+  background: linear-gradient(45deg, #ff5e99, #ff3d85);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 61, 133, 0.4); /* Pink glow */
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 8px rgba(255, 61, 133, 0.4);
+}
+
+button:disabled {
+  background: #d3d3d3; /* Gray */
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Upload Section */
+.upload-section input[type="file"] {
+  display: none;
+}
+
+.upload-section label {
+  display: inline-block;
+  padding: 12px 20px;
+  background: linear-gradient(45deg, #ff5e99, #ff3d85);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.upload-section label:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 61, 133, 0.4);
+}
+
+/* Canvas and Images */
+canvas {
+  margin-top: 20px;
+  border: 2px dashed #ff90c8;
+  display: block;
+  border-radius: 10px;
+  max-width: 100%;
+}
+
+#image-display img {
+  border-radius: 15px;
+  border: 2px solid #ff90c8;
+  margin-top: 15px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* ChatGPT Section */
+.chatgpt-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#response-text {
+  min-height: 100px;
+  overflow-y: auto;
+  background-color: #fffafc;
+  color: #333;
+  padding: 10px;
+  border: 1px solid #ff90c8;
+  border-radius: 8px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  border: 4px solid #f3f3f3; /* Light gray */
+  border-top: 4px solid #ff3d85; /* Pink */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  textarea, #user-prompt, #response-text {
+    font-size: 14px;
+    height: 80px;
+  }
+
+  button {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  canvas {
+    width: 100%;
+    height: auto;
+  }
+}
