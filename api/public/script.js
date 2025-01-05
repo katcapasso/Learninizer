@@ -64,9 +64,13 @@ fileUpload.addEventListener("change", async () => {
     const data = await response.json();
     extractedText.value = data.extractedText || "No text extracted.";
     uploadFeedback.textContent = "File processed successfully!";
+    uploadFeedback.classList.add("success-feedback");
+    uploadFeedback.classList.remove("error-feedback");
   } catch (error) {
     console.error("Error during OCR process:", error.message);
     uploadFeedback.textContent = "Failed to process the file.";
+    uploadFeedback.classList.add("error-feedback");
+    uploadFeedback.classList.remove("success-feedback");
     alert(error.message);
   }
 });

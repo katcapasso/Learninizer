@@ -1,5 +1,5 @@
 // Start server script
-console.log("Starting server.js...");
+console.log("Starting index.js...");
 
 const express = require("express");
 const cors = require("cors");
@@ -31,20 +31,20 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:4000",
-      "https://learninizer.vercel.app",
+      "http://localhost:4000", // Local environment
+      "https://learninizer.vercel.app", // Deployed environment
     ],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
-// Serve static files from the 'public' directory inside the `api` folder
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
 
 console.log("Middleware setup complete...");
 
-// Configure uploads directory (inside the `api/uploads` folder for clarity)
+// Configure uploads directory
 const uploadsDir = path.join(__dirname, "uploads");
 
 // Ensure uploads directory exists
