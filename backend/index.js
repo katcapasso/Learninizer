@@ -8,6 +8,7 @@ const Tesseract = require("tesseract.js");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
 // Validate environment variables
@@ -15,6 +16,14 @@ if (!process.env.OPENAI_API_KEY) {
   console.error("FATAL ERROR: Missing OPENAI_API_KEY in environment variables.");
   process.exit(1);
 }
+
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+  console.error("FATAL ERROR: Missing Supabase configuration in environment variables.");
+  process.exit(1);
+}
+
+// Initialize Supabase client
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // Initialize express app
 const app = express();
@@ -33,8 +42,11 @@ app.use(
 );
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+const isVercel = !!process.env.VERCEL;
+const uploadsDir = isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Configure Multer for file uploads
 const upload = multer({
@@ -65,15 +77,27 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
   const fileType = req.file.mimetype;
 
   try {
+    let extractedText = "";
     if (fileType === "application/pdf") {
-      const extractedText = await processPdf(filePath);
-      res.status(200).json({ extractedText });
+      extractedText = await processPdf(filePath);
     } else if (fileType.startsWith("image/")) {
       const { data } = await Tesseract.recognize(filePath, "eng");
-      res.status(200).json({ extractedText: data.text });
+      extractedText = data.text;
     } else {
-      res.status(400).json({ error: "Unsupported file type." });
+      return res.status(400).json({ error: "Unsupported file type." });
     }
+
+    // Save extracted text to Supabase
+    const { data, error } = await supabase
+      .from("extracted_texts") // Ensure this table exists in your Supabase database
+      .insert([{ text: extractedText }]);
+
+    if (error) {
+      console.error("Supabase insertion error:", error.message);
+      return res.status(500).json({ error: "Failed to save extracted text to Supabase." });
+    }
+
+    res.status(200).json({ extractedText, supabaseData: data });
   } catch (error) {
     console.error("File processing error:", error.message);
     res.status(500).json({ error: "Failed to process the file." });
@@ -105,7 +129,19 @@ app.post("/api/generate-text", async (req, res) => {
       }
     );
 
-    res.status(200).json({ generatedText: response.data.choices[0].message.content });
+    const generatedText = response.data.choices[0].message.content;
+
+    // Save generated text to Supabase
+    const { data, error } = await supabase
+      .from("generated_texts") // Ensure this table exists in your Supabase database
+      .insert([{ prompt, generated_text: generatedText }]);
+
+    if (error) {
+      console.error("Supabase insertion error:", error.message);
+      return res.status(500).json({ error: "Failed to save generated text to Supabase." });
+    }
+
+    res.status(200).json({ generatedText, supabaseData: data });
   } catch (error) {
     console.error("OpenAI API error:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to generate text." });
@@ -129,11 +165,28 @@ app.post("/api/generate-image", async (req, res) => {
       }
     );
 
-    res.status(200).json({ imageUrl: response.data.data[0].url });
+    const imageUrl = response.data.data[0].url;
+
+    // Save generated image to Supabase
+    const { data, error } = await supabase
+      .from("generated_images") // Ensure this table exists in your Supabase database
+      .insert([{ prompt, image_url: imageUrl }]);
+
+    if (error) {
+      console.error("Supabase insertion error:", error.message);
+      return res.status(500).json({ error: "Failed to save generated image to Supabase." });
+    }
+
+    res.status(200).json({ imageUrl, supabaseData: data });
   } catch (error) {
     console.error("Image generation error:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to generate image." });
   }
+});
+
+// Root Route
+app.get("/", (req, res) => {
+  res.send("Welcome to the Learninizer API!");
 });
 
 // Export for Vercel
@@ -149,6 +202,5 @@ if (!process.env.VERCEL) {
 
 // Helper function for PDF processing
 async function processPdf(filePath) {
-  // Add logic to process PDFs into images and extract text
   return "Text extracted from PDF (mocked)."; // Placeholder
 }
