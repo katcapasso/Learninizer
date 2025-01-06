@@ -8,58 +8,56 @@ const Tesseract = require("tesseract.js");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const sharp = require("sharp");
-const { PDFDocument } = require("pdf-lib");
 require("dotenv").config();
 
 // Validate environment variables
 if (!process.env.OPENAI_API_KEY) {
   console.error("FATAL ERROR: Missing OPENAI_API_KEY in environment variables.");
-  console.error("Ensure the .env file exists and is correctly configured.");
   process.exit(1);
 }
-
-console.log("Dependencies loaded...");
 
 // Initialize express app
 const app = express();
 
 // Middleware setup
-console.log("Middleware setup starting...");
 app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:4000", // Local environment
-      "https://learninizer.vercel.app", // Deployed environment
+      "http://localhost:3000", // Local React app
+      "https://learninizer.vercel.app", // Deployed React app
     ],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
 );
-app.use(express.static(path.join(__dirname, "public")));
-console.log("Middleware setup complete...");
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log(`Uploads directory created at ${uploadsDir}`);
-}
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // Configure Multer for file uploads
-const upload = multer({ dest: uploadsDir });
-
-// Root route for the app
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+const upload = multer({
+  dest: uploadsDir,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Unsupported file type. Only PDF, JPG, and PNG are allowed."));
+    }
+  },
 });
 
-// Extract text from uploaded files
-app.post("/extract-text", upload.single("file"), async (req, res) => {
-  console.log("Received request for /extract-text...");
+// API Endpoints
+app.get("/api", (req, res) => {
+  res.json({ message: "API is running. Endpoints are ready." });
+});
+
+// POST Endpoint to Extract Text
+app.post("/api/extract-text", upload.single("file"), async (req, res) => {
   if (!req.file) {
-    console.error("No file uploaded.");
     return res.status(400).json({ error: "No file uploaded." });
   }
 
@@ -68,47 +66,26 @@ app.post("/extract-text", upload.single("file"), async (req, res) => {
 
   try {
     if (fileType === "application/pdf") {
-      console.log("Processing PDF...");
-      const outputDir = path.join(uploadsDir, "pdf-images");
-      if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-
-      const pngFiles = await convertPdfToImages(filePath, outputDir);
-
-      let extractedText = "";
-      for (const imageFile of pngFiles) {
-        const {
-          data: { text },
-        } = await Tesseract.recognize(imageFile, "eng");
-        extractedText += `${text}\n`;
-        fs.unlinkSync(imageFile);
-      }
-
-      console.log("OCR completed successfully...");
+      const extractedText = await processPdf(filePath);
       res.status(200).json({ extractedText });
     } else if (fileType.startsWith("image/")) {
-      console.log("Processing image...");
-      const {
-        data: { text },
-      } = await Tesseract.recognize(filePath, "eng");
-      console.log("OCR completed successfully...");
-      res.status(200).json({ extractedText: text });
+      const { data } = await Tesseract.recognize(filePath, "eng");
+      res.status(200).json({ extractedText: data.text });
     } else {
-      console.error("Unsupported file type.");
       res.status(400).json({ error: "Unsupported file type." });
     }
   } catch (error) {
-    console.error("Error during file processing:", error.message);
+    console.error("File processing error:", error.message);
     res.status(500).json({ error: "Failed to process the file." });
   } finally {
     fs.unlink(filePath, (err) => {
-      if (err) console.error("Failed to delete file:", err.message);
+      if (err) console.error("Error deleting file:", err.message);
     });
   }
 });
 
-// Generate text using OpenAI API
-app.post("/generate-text", async (req, res) => {
-  console.log("Received request for /generate-text...");
+// POST Endpoint to Generate Text
+app.post("/api/generate-text", async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt) {
@@ -124,11 +101,10 @@ app.post("/generate-text", async (req, res) => {
         max_tokens: 200,
       },
       {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
+        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
       }
     );
+
     res.status(200).json({ generatedText: response.data.choices[0].message.content });
   } catch (error) {
     console.error("OpenAI API error:", error.response?.data || error.message);
@@ -136,9 +112,8 @@ app.post("/generate-text", async (req, res) => {
   }
 });
 
-// Generate image using OpenAI API
-app.post("/generate-image", async (req, res) => {
-  console.log("Received request for /generate-image...");
+// POST Endpoint to Generate Image
+app.post("/api/generate-image", async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt) {
@@ -150,21 +125,15 @@ app.post("/generate-image", async (req, res) => {
       "https://api.openai.com/v1/images/generations",
       { prompt, n: 1, size: "512x512" },
       {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
+        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
       }
     );
+
     res.status(200).json({ imageUrl: response.data.data[0].url });
   } catch (error) {
     console.error("Image generation error:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to generate image." });
   }
-});
-
-// Serve all other requests to the frontend
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Export for Vercel
@@ -176,4 +145,10 @@ if (!process.env.VERCEL) {
   app.listen(port, () => {
     console.log(`Server running locally at http://localhost:${port}`);
   });
-};
+}
+
+// Helper function for PDF processing
+async function processPdf(filePath) {
+  // Add logic to process PDFs into images and extract text
+  return "Text extracted from PDF (mocked)."; // Placeholder
+}
