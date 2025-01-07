@@ -41,16 +41,10 @@ app.use(
   })
 );
 
-// Ensure uploads directory exists
-const isVercel = !!process.env.VERCEL;
-const uploadsDir = isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure Multer for file uploads
+// Configure Multer for file uploads in memory
+const storage = multer.memoryStorage();
 const upload = multer({
-  dest: uploadsDir,
+  storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ["image/jpeg", "image/png", "application/pdf"];
@@ -73,15 +67,14 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
     return res.status(400).json({ error: "No file uploaded." });
   }
 
-  const filePath = req.file.path;
-  const fileType = req.file.mimetype;
+  const { buffer, mimetype } = req.file;
 
   try {
     let extractedText = "";
-    if (fileType === "application/pdf") {
-      extractedText = await processPdf(filePath);
-    } else if (fileType.startsWith("image/")) {
-      const { data } = await Tesseract.recognize(filePath, "eng");
+    if (mimetype === "application/pdf") {
+      extractedText = await processPdf(buffer); // Updated to handle in-memory buffer
+    } else if (mimetype.startsWith("image/")) {
+      const { data } = await Tesseract.recognize(buffer, "eng");
       extractedText = data.text;
     } else {
       return res.status(400).json({ error: "Unsupported file type." });
@@ -101,10 +94,6 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
   } catch (error) {
     console.error("File processing error:", error.message);
     res.status(500).json({ error: "Failed to process the file." });
-  } finally {
-    fs.unlink(filePath, (err) => {
-      if (err) console.error("Error deleting file:", err.message);
-    });
   }
 });
 
@@ -201,6 +190,7 @@ if (!process.env.VERCEL) {
 }
 
 // Helper function for PDF processing
-async function processPdf(filePath) {
+async function processPdf(buffer) {
+  // Add logic to process PDF from buffer
   return "Text extracted from PDF (mocked)."; // Placeholder
 }
