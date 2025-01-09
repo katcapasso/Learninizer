@@ -4,70 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learninizer: Text to Image Learning Tool</title>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Meta Tags for SEO and Social Media -->
+    <meta name="description" content="Learninizer is an AI-powered text-to-image tool designed to help students create personalized learning content.">
+    <meta name="author" content="Learninizer Team">
+    <meta property="og:title" content="Learninizer: Text to Image Learning Tool">
+    <meta property="og:description" content="Generate AI-powered learning tools with text-to-image technology.">
+    <meta property="og:image" content="path/to/your/image.jpg">
+    <meta property="og:url" content="https://your-site-url.com">
+    
+    <!-- Favicon Link -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" type="image/x-icon">
+
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Learninizer: Text to Image Learning Tool</h1>
-            <p>Convert text into learning tools with AI-powered features.</p>
-        </header>
+    <!-- Root element where React will mount -->
+    <div id="root"></div>
 
-        <!-- Upload Section -->
-        <section class="upload-section">
-            <h2>Upload Image or PDF</h2>
-            <label for="file-upload" class="upload-label">Choose a file:</label>
-            <input type="file" id="file-upload" accept="image/*, .pdf">
-            <p id="upload-feedback" class="feedback">No file uploaded yet.</p> <!-- Dynamic upload feedback -->
-        </section>
-
-        <!-- Extracted Text Section -->
-        <section id="text-display" class="text-display">
-            <h2>Extracted Text</h2>
-            <textarea id="extracted-text" placeholder="Extracted text will appear here..." readonly></textarea>
-            <button id="highlight-btn" class="btn">Highlight Text</button>
-            <p id="ocr-error-feedback" class="feedback error-feedback">No errors yet.</p> <!-- OCR error feedback -->
-        </section>
-
-        <!-- AI Image Generation Section -->
-        <section id="image-creation" class="image-creation">
-            <h2>Generate AI Image</h2>
-            <textarea id="selected-text" placeholder="Highlight or edit text to create an AI-powered image"></textarea>
-            <button id="generate-image-btn" class="btn">Generate AI Image</button>
-            <div id="image-display">
-                <h3>Generated Image:</h3>
-                <img id="generated-image" alt="Generated Image" style="max-width: 100%; display: none; border: 1px solid #ccc;">
-                <p id="image-placeholder">No image generated yet.</p>
-            </div>
-            <p id="image-error-feedback" class="feedback error-feedback">No errors yet.</p> <!-- AI Image error feedback -->
-        </section>
-
-        <!-- AI Text Generation Section -->
-        <section class="ai-text-generation-section">
-            <h2>Ask ChatGPT</h2>
-            <textarea id="user-prompt" placeholder="Type your question here to get a response from ChatGPT..."></textarea>
-            <button id="submit-prompt-btn" class="btn">Submit Prompt</button>
-            <div id="chatgpt-response">
-                <h3>ChatGPT Response:</h3>
-                <p id="response-text">No response yet.</p>
-            </div>
-            <p id="chatgpt-error-feedback" class="feedback error-feedback">No errors yet.</p> <!-- ChatGPT error feedback -->
-        </section>
-
-        <!-- Image Creation and Save Section -->
-        <section class="image-creation-and-save">
-            <h2>Create and Save Image</h2>
-            <button id="create-image-btn" class="btn">Create Image</button>
-            <canvas id="image-canvas" style="border: 1px solid #ccc; display: block;"></canvas>
-            <button id="save-image-btn" class="btn">Save Image</button>
-        </section>
-    </div>
-
+    <!-- Footer (this will appear at the bottom of the page) -->
     <footer>
         <p>&copy; 2025 Learninizer. All Rights Reserved.</p>
     </footer>
 
-    <!-- Link the JavaScript file -->
-    <script src="script.js"></script>
+    <!-- The link to the JavaScript files will be automatically injected during the build process -->
 </body>
 </html>

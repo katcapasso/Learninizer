@@ -1,13 +1,11 @@
 // Start server script
-console.log("Starting index.js...");
+console.log("Starting backend server...");
 
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const Tesseract = require("tesseract.js");
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
@@ -21,6 +19,10 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
   console.error("FATAL ERROR: Missing Supabase configuration in environment variables.");
   process.exit(1);
 }
+
+// Print the values of the environment variables for debugging
+console.log('Supabase URL:', process.env.SUPABASE_URL);
+console.log('Supabase anon key:', process.env.SUPABASE_ANON_KEY);
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
@@ -41,11 +43,11 @@ app.use(
   })
 );
 
-// Configure Multer for file uploads in memory
+// Configure Multer for file uploads (in-memory storage)
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file limit
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ["image/jpeg", "image/png", "application/pdf"];
     if (allowedMimeTypes.includes(file.mimetype)) {
@@ -57,8 +59,15 @@ const upload = multer({
 });
 
 // API Endpoints
-app.get("/api", (req, res) => {
-  res.json({ message: "API is running. Endpoints are ready." });
+
+// Root Endpoint
+app.get("/", (req, res) => {
+  res.send("Welcome to the Learninizer API!");
+});
+
+// Test Endpoint to check backend connection
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend connected successfully!" });
 });
 
 // POST Endpoint to Extract Text
@@ -71,8 +80,9 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
 
   try {
     let extractedText = "";
+
     if (mimetype === "application/pdf") {
-      extractedText = await processPdf(buffer); // Updated to handle in-memory buffer
+      extractedText = await processPdf(buffer);
     } else if (mimetype.startsWith("image/")) {
       const { data } = await Tesseract.recognize(buffer, "eng");
       extractedText = data.text;
@@ -82,7 +92,7 @@ app.post("/api/extract-text", upload.single("file"), async (req, res) => {
 
     // Save extracted text to Supabase
     const { data, error } = await supabase
-      .from("extracted_texts") // Ensure this table exists in your Supabase database
+      .from("extracted_texts")
       .insert([{ text: extractedText }]);
 
     if (error) {
@@ -122,7 +132,7 @@ app.post("/api/generate-text", async (req, res) => {
 
     // Save generated text to Supabase
     const { data, error } = await supabase
-      .from("generated_texts") // Ensure this table exists in your Supabase database
+      .from("generated_texts")
       .insert([{ prompt, generated_text: generatedText }]);
 
     if (error) {
@@ -146,6 +156,8 @@ app.post("/api/generate-image", async (req, res) => {
   }
 
   try {
+    console.log('Generating image for prompt:', prompt); // Debug log to ensure the request is received
+
     const response = await axios.post(
       "https://api.openai.com/v1/images/generations",
       { prompt, n: 1, size: "512x512" },
@@ -158,7 +170,7 @@ app.post("/api/generate-image", async (req, res) => {
 
     // Save generated image to Supabase
     const { data, error } = await supabase
-      .from("generated_images") // Ensure this table exists in your Supabase database
+      .from("generated_images")
       .insert([{ prompt, image_url: imageUrl }]);
 
     if (error) {
@@ -171,11 +183,6 @@ app.post("/api/generate-image", async (req, res) => {
     console.error("Image generation error:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to generate image." });
   }
-});
-
-// Root Route
-app.get("/", (req, res) => {
-  res.send("Welcome to the Learninizer API!");
 });
 
 // Export for Vercel
@@ -192,5 +199,5 @@ if (!process.env.VERCEL) {
 // Helper function for PDF processing
 async function processPdf(buffer) {
   // Add logic to process PDF from buffer
-  return "Text extracted from PDF (mocked)."; // Placeholder
+  return "Upload Another File"; // Placeholder
 }

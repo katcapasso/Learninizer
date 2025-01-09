@@ -2,11 +2,13 @@
   "name": "frontend-new",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:4000",
   "dependencies": {
-    "cra-template": "1.2.0",
+    "axios": "^1.5.0",
+    "dotenv": "^16.0.3",
     "postcss": "^8.4.49",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "resolve-url-loader": "^5.0.0",
     "svgo": "^3.3.2",
@@ -35,5 +37,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "babel-loader": "^9.2.1"
   }
 }

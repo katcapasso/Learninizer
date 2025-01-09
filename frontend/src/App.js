@@ -1,40 +1,39 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
-import "./App.css";
+import "./App.css"; // Import App-specific styles
+import "./style.css"; // Import global styles
 import UploadSection from "./components/UploadSection";
 import ExtractedTextSection from "./components/ExtractedTextSection";
 import AIImageGeneration from "./components/AIImageGeneration";
 import AITextGeneration from "./components/AITextGeneration";
 import Footer from "./components/Footer";
+import { fetchTestData } from "./api"; // Import API functions
+
+// Constants for backend URLs and endpoints
+const API_TEST_ENDPOINT = "/api/test"; // Endpoint for testing backend connection
 
 function App() {
-  const [extractedText, setExtractedText] = useState("");
-  const [backendData, setBackendData] = useState(null);
-  const [backendError, setBackendError] = useState(null);
+  const [extractedText, setExtractedText] = useState(""); // Holds text extracted from uploaded files
+  const [backendData, setBackendData] = useState(null); // Holds data returned from backend
+  const [backendError, setBackendError] = useState(null); // Holds backend error messages
 
-  // Fetch data from the backend when the app loads
+  // Fetch data from the backend when component mounts
   useEffect(() => {
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
-
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/test`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data from backend");
-        }
-        const data = await response.json();
-        console.log("Backend Response:", data);
+        const data = await fetchTestData(); // Use the fetchTestData function from api.js
         setBackendData(data);
       } catch (error) {
-        console.error("Error connecting to backend:", error);
-        setBackendError(error.message);
+        setBackendError(error.message); // Set the error message if request fails
       }
     };
 
-    fetchData();
-  }, []); // Empty dependency array ensures this runs once on component mount
+    fetchData(); // Run fetchData function once on component mount
+  }, []); // Empty dependency array ensures this effect runs only once
 
+  // Handle extracted text from the UploadSection component
   const handleExtractedText = (text) => {
-    setExtractedText(text);
+    setExtractedText(text); // Set extracted text state
   };
 
   return (
@@ -44,15 +43,24 @@ function App() {
         <p>Convert text into learning tools with AI-powered features.</p>
         {/* Display backend connection status */}
         {backendError ? (
-          <p className="error">Error: {backendError}</p>
+          <p className="error">Error: {backendError}</p> // Display error if any
+        ) : backendData ? (
+          <p className="success">Backend Connected: {backendData.message}</p> // Display success message if backend is connected
         ) : (
-          backendData && <p className="success">Backend Connected: {backendData.message}</p>
+          <p>Loading backend status...</p> // Display loading message if backend data is not yet available
         )}
       </header>
-      <UploadSection onExtractedText={handleExtractedText} />
-      <ExtractedTextSection extractedText={extractedText} />
-      <AIImageGeneration />
-      <AITextGeneration />
+      <main>
+        {/* Pass extractedText handler to UploadSection */}
+        <UploadSection onExtractedText={handleExtractedText} />
+        {/* Display extracted text */}
+        <ExtractedTextSection extractedText={extractedText} />
+        {/* AI image generation component */}
+        <AIImageGeneration />
+        {/* AI text generation component */}
+        <AITextGeneration />
+      </main>
+      {/* Footer component */}
       <Footer />
     </div>
   );

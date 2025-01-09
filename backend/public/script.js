@@ -1,4 +1,4 @@
-// Select elements
+// Select elements for file upload and other UI components
 const fileUpload = document.getElementById("file-upload");
 const extractedText = document.getElementById("extracted-text");
 const highlightBtn = document.getElementById("highlight-btn");
@@ -6,7 +6,7 @@ const selectedText = document.getElementById("selected-text");
 const createImageBtn = document.getElementById("create-image-btn");
 const saveImageBtn = document.getElementById("save-image-btn");
 const imageCanvas = document.getElementById("image-canvas");
-const ctx = imageCanvas.getContext("2d");
+const ctx = imageCanvas?.getContext("2d");
 const generateImageBtn = document.getElementById("generate-image-btn");
 const generatedImage = document.getElementById("generated-image");
 const submitPromptBtn = document.getElementById("submit-prompt-btn");
@@ -14,14 +14,11 @@ const userPrompt = document.getElementById("user-prompt");
 const responseText = document.getElementById("response-text");
 const uploadFeedback = document.getElementById("upload-feedback");
 
-// Determine the API base URL dynamically
-const API_BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:4000/api"
-    : "https://learninizer.vercel.app/api";
+// Log the API URL for debugging
+console.log("Backend API URL:", API_BASE_URL);
 
-// Helper function to test API connection
-async function testAPIConnection() {
+// Test API connection
+(async function testAPIConnection() {
   try {
     const response = await fetch(`${API_BASE_URL}/`);
     if (!response.ok) {
@@ -32,18 +29,12 @@ async function testAPIConnection() {
     console.error("Failed to connect to backend:", error.message);
     alert("Backend connection failed. Ensure your server is running.");
   }
-}
+})();
 
-// Call testAPIConnection at startup
-testAPIConnection();
-
-// OCR Process (using the backend OCR API)
-fileUpload.addEventListener("change", async () => {
+// File Upload and Text Extraction
+fileUpload?.addEventListener("change", async () => {
   const file = fileUpload.files[0];
-  if (!file) {
-    alert("Please select a file to upload.");
-    return;
-  }
+  if (!file) return alert("Please select a file to upload.");
 
   const formData = new FormData();
   formData.append("file", file);
@@ -51,15 +42,12 @@ fileUpload.addEventListener("change", async () => {
   uploadFeedback.textContent = "Uploading and processing file...";
 
   try {
-    const response = await fetch(`${API_BASE_URL}/extract-text`, {
+    const response = await fetch(`${API_BASE_URL}/api/extract-text`, {
       method: "POST",
       body: formData,
     });
 
-    if (!response.ok) {
-      if (response.status === 400) throw new Error("No file uploaded.");
-      throw new Error("Error during text extraction.");
-    }
+    if (!response.ok) throw new Error("Error during text extraction.");
 
     const data = await response.json();
     extractedText.value = data.extractedText || "No text extracted.";
@@ -72,24 +60,21 @@ fileUpload.addEventListener("change", async () => {
 });
 
 // Highlight Text
-highlightBtn.addEventListener("click", () => {
+highlightBtn?.addEventListener("click", () => {
   const text = extractedText.value;
   if (text) {
-    selectedText.value = text.substring(0, 200); // Highlights the first 200 characters
+    selectedText.value = text.substring(0, 200); // Highlight first 200 chars
   } else {
     alert("No text available to highlight.");
   }
 });
 
 // Create Image from Text
-createImageBtn.addEventListener("click", () => {
+createImageBtn?.addEventListener("click", () => {
   const text = selectedText.value.trim();
-  if (!text) {
-    alert("Please select or enter text to create an image.");
-    return;
-  }
+  if (!text) return alert("Please select or enter text to create an image.");
 
-  const lines = Math.ceil(text.length / 80); // Assume ~80 characters per line
+  const lines = Math.ceil(text.length / 80); // Approx 80 chars per line
   imageCanvas.width = 800;
   imageCanvas.height = lines * 30;
   ctx.fillStyle = "#f1f1f1";
@@ -103,8 +88,7 @@ createImageBtn.addEventListener("click", () => {
 
   words.forEach((word) => {
     const testLine = `${line}${word} `;
-    const testWidth = ctx.measureText(testLine).width;
-    if (testWidth > 760) {
+    if (ctx.measureText(testLine).width > 760) {
       ctx.fillText(line, 20, y);
       line = `${word} `;
       y += 30;
@@ -112,37 +96,32 @@ createImageBtn.addEventListener("click", () => {
       line = testLine;
     }
   });
-  ctx.fillText(line, 20, y); // Draw the last line
+  ctx.fillText(line, 20, y);
 });
 
 // Save Image
-saveImageBtn.addEventListener("click", () => {
+saveImageBtn?.addEventListener("click", () => {
   const link = document.createElement("a");
   link.download = "text-image.png";
   link.href = imageCanvas.toDataURL();
   link.click();
 });
 
-// Generate Image using OpenAI API
-generateImageBtn.addEventListener("click", async () => {
+// Generate Image using AI
+generateImageBtn?.addEventListener("click", async () => {
   const prompt = selectedText.value.trim();
-  if (!prompt) {
-    alert("Please enter or highlight text to generate an image.");
-    return;
-  }
+  if (!prompt) return alert("Please enter or highlight text to generate an image.");
 
   try {
-    const response = await fetch(`${API_BASE_URL}/generate-image`, {
+    const response = await fetch(`${API_BASE_URL}/api/generate-image`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) {
-      if (response.status === 400) throw new Error("Invalid prompt.");
-      throw new Error("Error generating image.");
+      const text = await response.text(); // Get the error message in text format
+      throw new Error(`Error generating image: ${text}`);
     }
 
     const data = await response.json();
@@ -161,33 +140,25 @@ generateImageBtn.addEventListener("click", async () => {
 // Fetch ChatGPT Response
 async function fetchChatGPTResponse(prompt) {
   try {
-    const response = await fetch(`${API_BASE_URL}/generate-text`, {
+    const response = await fetch(`${API_BASE_URL}/api/generate-text`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),
     });
 
-    if (!response.ok) {
-      if (response.status === 400) throw new Error("Invalid prompt.");
-      throw new Error("Error fetching ChatGPT response.");
-    }
+    if (!response.ok) throw new Error("Error fetching ChatGPT response.");
 
     const data = await response.json();
     responseText.innerText = data.generatedText || "No response received.";
   } catch (error) {
     console.error("Error fetching ChatGPT response:", error.message);
-    responseText.innerText = "Failed to fetch response. Please try again.";
+    responseText.innerText = "Failed to fetch response.";
   }
 }
 
 // ChatGPT Prompt Submission
-submitPromptBtn.addEventListener("click", () => {
+submitPromptBtn?.addEventListener("click", () => {
   const prompt = userPrompt.value.trim();
-  if (prompt) {
-    fetchChatGPTResponse(prompt);
-  } else {
-    alert("Please enter a prompt.");
-  }
+  if (!prompt) return alert("Please enter a prompt.");
+  fetchChatGPTResponse(prompt);
 });

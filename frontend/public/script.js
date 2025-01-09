@@ -1,3 +1,6 @@
+// Importing values from config.js
+import { API_BASE_URL } from './config'; // Adjust the path according to your project structure
+
 // Select elements
 const fileUpload = document.getElementById("file-upload");
 const extractedText = document.getElementById("extracted-text");
@@ -14,11 +17,8 @@ const userPrompt = document.getElementById("user-prompt");
 const responseText = document.getElementById("response-text");
 const uploadFeedback = document.getElementById("upload-feedback");
 
-// API base URL
-const API_BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:4000"
-    : "https://learninizer.vercel.app";
+// Debugging log to verify correct API base URL
+console.log('API_BASE_URL:', API_BASE_URL);
 
 // Helper: Test API connection
 (async function testAPIConnection() {
@@ -122,7 +122,11 @@ generateImageBtn?.addEventListener("click", async () => {
       body: JSON.stringify({ prompt }),
     });
 
-    if (!response.ok) throw new Error("Error generating image.");
+    if (!response.ok) {
+      // Handle unexpected responses
+      const text = await response.text(); // Get the error message in text format
+      throw new Error(`Error generating image: ${text}`);
+    }
 
     const data = await response.json();
     if (data.imageUrl) {

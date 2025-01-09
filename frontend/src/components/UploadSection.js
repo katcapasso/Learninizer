@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+// src/components/UploadSection.js
+import React, { useState } from "react"; // Import React and useState
 import { API_BASE_URL } from "../config"; // Use named import for API base URL
 
-const UploadSection = () => {
+const UploadSection = ({ onExtractedText }) => {
   const [uploadFeedback, setUploadFeedback] = useState("No file uploaded yet."); // Feedback message for the user
   const [extractedText, setExtractedText] = useState(""); // Stores the extracted text
   const [isUploading, setIsUploading] = useState(false); // Tracks upload state
@@ -21,14 +22,12 @@ const UploadSection = () => {
     setIsUploading(true); // Indicate the upload is in progress
 
     try {
-      // Send the file to the backend
       const response = await fetch(`${API_BASE_URL}/api/extract-text`, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        // If the backend responds with an error
         const errorData = await response.json();
         setUploadFeedback(errorData.error || "Failed to upload file.");
         return;
@@ -37,8 +36,8 @@ const UploadSection = () => {
       const data = await response.json(); // Parse the JSON response
       setExtractedText(data.extractedText || "No text extracted.");
       setUploadFeedback("File processed successfully!");
+      onExtractedText(data.extractedText); // Notify parent component about extracted text
     } catch (error) {
-      console.error("Error uploading file:", error);
       setUploadFeedback("Error uploading file. Please try again.");
     } finally {
       setIsUploading(false); // Reset upload state
