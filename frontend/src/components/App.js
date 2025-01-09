@@ -1,12 +1,11 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
-import "./App.css"; // Import App-specific styles
-import "./style.css"; // Import global styles
-import UploadSection from "./components/UploadSection";
-import ExtractedTextSection from "./components/ExtractedTextSection";
-import AIImageGeneration from "./components/AIImageGeneration";
-import AITextGeneration from "./components/AITextGeneration";
-import Footer from "./components/Footer";
+import "../styles/App.css";  // Correct path for App-specific styles
+import "../styles/style.css";  // Correct path for global styles
+import UploadSection from "./UploadSection";
+import ExtractedTextSection from "./ExtractedTextSection";
+import AIImageGeneration from "./AIImageGeneration";
+import AITextGeneration from "./AITextGeneration";
+import Footer from "./Footer";
 import { fetchTestData } from "./api"; // Import API functions
 
 // Constants for backend URLs and endpoints

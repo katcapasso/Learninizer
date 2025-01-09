@@ -17,11 +17,11 @@ const AIImageGeneration = () => {
     setError(null); // Reset error message
 
     try {
-      const response = await fetch(`${API_BASE_URL}/generate-image`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
+        const response = await fetch(`${API_BASE_URL}/api/generate-image`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          });          
 
       if (!response.ok) {
         // Handle unexpected responses

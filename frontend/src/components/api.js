@@ -22,7 +22,7 @@ export const fetchTestData = async () => {
 // Function to generate AI image by sending a prompt to the backend
 export const generateImage = async (prompt) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/generate-image`, {
+        const response = await fetch(`${API_BASE_URL}/api/generate-image`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt }) // Send the prompt in the request body

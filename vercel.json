@@ -26,12 +26,6 @@
         "src": "/(.*)",
         "dest": "frontend/build/index.html"
       }
-    ],
-    "env": {
-      "REACT_APP_BACKEND_URL": "https://your-vercel-backend-url",
-      "SUPABASE_URL": "your-supabase-url",
-      "SUPABASE_ANON_KEY": "your-supabase-anon-key",
-      "OPENAI_API_KEY": "your-openai-api-key"
-    }
+    ]
   }
   
