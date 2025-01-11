@@ -1,13 +1,11 @@
-console.log('NODE_ENV:', process.env.NODE_ENV);  // Log the current environment
-
 const FRONTEND_BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://learninizer.vercel.app"  // For production
-    : "http://localhost:3000";  // For development
+    ? "https://learninizer.vercel.app"
+    : "http://localhost:3000";
 
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://learninizer.vercel.app/api"  // For production
-    : "http://localhost:4000";  // For development
+    ? "https://learninizer.vercel.app/api"
+    : "http://localhost:4000";
 
 export { FRONTEND_BASE_URL, API_BASE_URL };

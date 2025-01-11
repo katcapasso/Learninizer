@@ -1,28 +1,37 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
-  entry: './src/index.js', // Entry point of your app
+  entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'), // Where to output bundled files
-    filename: 'bundle.js', // Name of the output file
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/, // Look for JS or JSX files
-        exclude: /node_modules/, // Exclude node_modules from transpiling
+        test: /\.jsx?$/, // Handle JS and JSX files
+        exclude: /node_modules/,
         use: {
-          loader: 'babel-loader', // Use Babel to transpile JS/JSX files
+          loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'], // Use Babel presets
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },
       },
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'], // Allow importing JS and JSX files without file extensions
+    extensions: ['.js', '.jsx'],
   },
-  devtool: 'source-map', // Optional: helps with debugging by generating source maps
+  devtool: 'source-map', // Enable source maps for better debugging
   mode: 'development', // Set to 'production' for production builds
+  optimization: {
+    minimize: process.env.NODE_ENV === 'production', // Minimize code in production
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV), // Define NODE_ENV
+    }),
+  ],
 };

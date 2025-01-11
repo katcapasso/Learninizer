@@ -17,8 +17,10 @@ const userPrompt = document.getElementById("user-prompt");
 const responseText = document.getElementById("response-text");
 const uploadFeedback = document.getElementById("upload-feedback");
 
-// Debugging log to verify correct API base URL
-console.log('API_BASE_URL:', API_BASE_URL);
+// Debugging log to verify correct API base URL (only in development)
+if (process.env.NODE_ENV === 'development') {
+  console.log('API_BASE_URL:', API_BASE_URL);
+}
 
 // Helper: Test API connection
 (async function testAPIConnection() {
@@ -123,7 +125,6 @@ generateImageBtn?.addEventListener("click", async () => {
     });
 
     if (!response.ok) {
-      // Handle unexpected responses
       const text = await response.text(); // Get the error message in text format
       throw new Error(`Error generating image: ${text}`);
     }

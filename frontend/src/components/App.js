@@ -1,38 +1,33 @@
 import React, { useState, useEffect } from "react";
-import "../styles/App.css";  // Correct path for App-specific styles
-import "../styles/style.css";  // Correct path for global styles
+import "../styles/App.css";
+import "../styles/style.css";
 import UploadSection from "./UploadSection";
 import ExtractedTextSection from "./ExtractedTextSection";
 import AIImageGeneration from "./AIImageGeneration";
 import AITextGeneration from "./AITextGeneration";
 import Footer from "./Footer";
-import { fetchTestData } from "./api"; // Import API functions
-
-// Constants for backend URLs and endpoints
-const API_TEST_ENDPOINT = "/api/test"; // Endpoint for testing backend connection
+import { fetchTestData } from "./api";
 
 function App() {
-  const [extractedText, setExtractedText] = useState(""); // Holds text extracted from uploaded files
-  const [backendData, setBackendData] = useState(null); // Holds data returned from backend
-  const [backendError, setBackendError] = useState(null); // Holds backend error messages
+  const [extractedText, setExtractedText] = useState("");
+  const [backendData, setBackendData] = useState(null);
+  const [backendError, setBackendError] = useState(null);
 
-  // Fetch data from the backend when component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchTestData(); // Use the fetchTestData function from api.js
+        const data = await fetchTestData();
         setBackendData(data);
       } catch (error) {
-        setBackendError(error.message); // Set the error message if request fails
+        setBackendError(error.message);
       }
     };
 
-    fetchData(); // Run fetchData function once on component mount
-  }, []); // Empty dependency array ensures this effect runs only once
+    fetchData();
+  }, []);
 
-  // Handle extracted text from the UploadSection component
   const handleExtractedText = (text) => {
-    setExtractedText(text); // Set extracted text state
+    setExtractedText(text);
   };
 
   return (
@@ -40,26 +35,20 @@ function App() {
       <header>
         <h1>Learninizer: Text to Image Learning Tool</h1>
         <p>Convert text into learning tools with AI-powered features.</p>
-        {/* Display backend connection status */}
         {backendError ? (
-          <p className="error">Error: {backendError}</p> // Display error if any
+          <p className="error">Error: {backendError}</p>
         ) : backendData ? (
-          <p className="success">Backend Connected: {backendData.message}</p> // Display success message if backend is connected
+          <p className="success">Backend Connected: {backendData.message}</p>
         ) : (
-          <p>Loading backend status...</p> // Display loading message if backend data is not yet available
+          <p>Loading backend status...</p>
         )}
       </header>
       <main>
-        {/* Pass extractedText handler to UploadSection */}
         <UploadSection onExtractedText={handleExtractedText} />
-        {/* Display extracted text */}
         <ExtractedTextSection extractedText={extractedText} />
-        {/* AI image generation component */}
         <AIImageGeneration />
-        {/* AI text generation component */}
         <AITextGeneration />
       </main>
-      {/* Footer component */}
       <Footer />
     </div>
   );

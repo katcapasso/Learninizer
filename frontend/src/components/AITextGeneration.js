@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { API_BASE_URL } from "../config"; // Ensure this import is correct
+import { API_BASE_URL } from "../config";
 
 const AITextGeneration = () => {
   const [responseText, setResponseText] = useState("");

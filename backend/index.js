@@ -1,6 +1,3 @@
-// Start server script
-console.log("Starting backend server...");
-
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -9,35 +6,21 @@ const axios = require("axios");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
-// Validate environment variables
-if (!process.env.OPENAI_API_KEY) {
-  console.error("FATAL ERROR: Missing OPENAI_API_KEY in environment variables.");
-  process.exit(1);
-}
-
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-  console.error("FATAL ERROR: Missing Supabase configuration in environment variables.");
-  process.exit(1);
-}
-
-// Print the values of the environment variables for debugging
-console.log('Supabase URL:', process.env.SUPABASE_URL);
-console.log('Supabase anon key:', process.env.SUPABASE_ANON_KEY);
+const app = express();
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-// Initialize express app
-const app = express();
+// CORS setup to allow both local development and production
+const allowedOrigins = process.env.NODE_ENV === "production" 
+  ? "https://learninizer.vercel.app" // Production URL
+  : "http://localhost:3000"; // Local URL for development
 
 // Middleware setup
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000", // Local React app
-      "https://learninizer.vercel.app", // Deployed React app
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
@@ -188,16 +171,14 @@ app.post("/api/generate-image", async (req, res) => {
 // Export for Vercel
 module.exports = app;
 
-// Start server locally if not in Vercel
-if (!process.env.VERCEL) {
-  const port = process.env.PORT || 4000;
-  app.listen(port, () => {
-    console.log(`Server running locally at http://localhost:${port}`);
-  });
-}
-
 // Helper function for PDF processing
 async function processPdf(buffer) {
   // Add logic to process PDF from buffer
   return "Upload Another File"; // Placeholder
 }
+
+// Ensure the server is listening on the correct port
+const port = process.env.PORT || 4000;
+app.listen(port, () => {
+  console.log(`Backend server is running on http://localhost:${port}`);
+});
