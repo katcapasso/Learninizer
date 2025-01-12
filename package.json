@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "yarn start --prefix frontend",                
-    "backend": "yarn start --prefix backend",               
-    "dev": "yarn start --prefix frontend & yarn dev --prefix backend", 
-    "deploy": "vercel --prod"                               
+    "start": "yarn start --prefix frontend",
+    "backend": "yarn start --prefix backend",
+    "dev": "yarn start --prefix frontend & yarn dev --prefix backend",
+    "deploy": "vercel --prod"
   },
-  "dependencies": {},
   "devDependencies": {},
   "engines": {
     "node": "22.x"
